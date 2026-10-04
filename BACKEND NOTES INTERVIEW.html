@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Backend Development — Complete Notes</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --surface2: #f1f3f5;
+    --border: #e2e8f0;
+    --text: #1a202c;
+    --text2: #4a5568;
+    --text3: #718096;
+    --accent: #3b82f6;
+    --accent-bg: #eff6ff;
+    --accent-border: #bfdbfe;
+    --green: #059669;
+    --green-bg: #ecfdf5;
+    --green-border: #a7f3d0;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --amber-border: #fde68a;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --red-border: #fecaca;
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --purple-border: #ddd6fe;
+    --mono: 'Courier New', monospace;
+    --sans: 'Segoe UI', system-ui, sans-serif;
+    --radius: 10px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.7; }
+
+  /* ── Sidebar ── */
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 240px; flex-shrink: 0; background: var(--surface);
+    border-right: 1px solid var(--border); padding: 24px 0;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  }
+  .sidebar-logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .sidebar-logo h1 { font-size: 15px; font-weight: 700; color: var(--text); }
+  .sidebar-logo p { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .nav-group { margin-bottom: 4px; }
+  .nav-label { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; padding: 8px 20px 4px; }
+  .nav-item {
+    display: block; padding: 6px 20px; font-size: 13px; color: var(--text2);
+    text-decoration: none; border-left: 2px solid transparent; cursor: pointer;
+    transition: all .15s;
+  }
+  .nav-item:hover, .nav-item.active { color: var(--accent); background: var(--accent-bg); border-left-color: var(--accent); }
+
+  /* ── Main ── */
+  .main { flex: 1; max-width: 800px; padding: 40px 48px; }
+
+  /* ── Sections ── */
+  .section { margin-bottom: 64px; scroll-margin-top: 24px; }
+  .section-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .06em; padding: 4px 10px; border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  .badge-blue   { background: var(--accent-bg);  color: var(--accent); border: 1px solid var(--accent-border); }
+  .badge-green  { background: var(--green-bg);   color: var(--green);  border: 1px solid var(--green-border); }
+  .badge-amber  { background: var(--amber-bg);   color: var(--amber);  border: 1px solid var(--amber-border); }
+  .badge-purple { background: var(--purple-bg);  color: var(--purple); border: 1px solid var(--purple-border); }
+  .badge-red    { background: var(--red-bg);      color: var(--red);    border: 1px solid var(--red-border); }
+
+  h2.section-title { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .section-desc { font-size: 15px; color: var(--text2); margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+
+  /* ── Cards ── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 16px; }
+  .card-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .card-body { font-size: 14px; color: var(--text2); }
+  .card-body p { margin-bottom: 8px; }
+  .card-body p:last-child { margin-bottom: 0; }
+
+  /* ── Flow diagram ── */
+  .flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin: 16px 0; }
+  .flow-box {
+    background: var(--accent-bg); border: 1.5px solid var(--accent-border);
+    border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 600;
+    color: var(--accent); text-align: center; white-space: nowrap;
+  }
+  .flow-box.green  { background: var(--green-bg);  border-color: var(--green-border);  color: var(--green); }
+  .flow-box.amber  { background: var(--amber-bg);  border-color: var(--amber-border);  color: var(--amber); }
+  .flow-box.purple { background: var(--purple-bg); border-color: var(--purple-border); color: var(--purple); }
+  .flow-box.gray   { background: var(--surface2);  border-color: var(--border);         color: var(--text2); }
+  .flow-arrow { font-size: 18px; color: var(--text3); padding: 0 6px; }
+
+  /* ── Code block ── */
+  .code-wrap { background: #0f172a; border-radius: var(--radius); overflow: hidden; margin: 12px 0; }
+  .code-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; background: #1e293b; border-bottom: 1px solid #334155; }
+  .code-lang { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; }
+  .code-copy { font-size: 11px; color: #64748b; cursor: pointer; background: none; border: none; padding: 2px 8px; border-radius: 4px; transition: all .15s; }
+  .code-copy:hover { background: #334155; color: #94a3b8; }
+  pre { padding: 16px; overflow-x: auto; }
+  code { font-family: var(--mono); font-size: 13px; line-height: 1.7; color: #e2e8f0; }
+  .kw  { color: #93c5fd; }   /* keywords */
+  .str { color: #86efac; }   /* strings */
+  .cm  { color: #64748b; font-style: italic; }  /* comments */
+  .fn  { color: #fde68a; }   /* functions */
+  .num { color: #f9a8d4; }   /* numbers */
+  .prop{ color: #67e8f9; }   /* properties */
+  .var { color: #e2e8f0; }
+
+  /* ── Callout ── */
+  .callout { border-left: 3px solid; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 12px 0; font-size: 14px; }
+  .callout-blue   { border-color: var(--accent); background: var(--accent-bg); color: #1e40af; }
+  .callout-green  { border-color: var(--green);  background: var(--green-bg);  color: #065f46; }
+  .callout-amber  { border-color: var(--amber);  background: var(--amber-bg);  color: #92400e; }
+  .callout strong { font-weight: 700; }
+
+  /* ── Compare table ── */
+  .compare { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+  .compare th { background: var(--surface2); padding: 10px 14px; text-align: left; font-weight: 700; font-size: 12px; color: var(--text2); border-bottom: 1px solid var(--border); }
+  .compare td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .compare tr:last-child td { border-bottom: none; }
+  .compare tr:hover td { background: var(--surface2); }
+  .mono-pill { font-family: var(--mono); background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-size: 12px; color: var(--text); }
+
+  /* ── File tree ── */
+  .tree { background: #0f172a; border-radius: var(--radius); padding: 16px 20px; font-family: var(--mono); font-size: 13px; line-height: 1.9; color: #cbd5e1; margin: 12px 0; }
+  .tree .folder { color: #93c5fd; font-weight: 600; }
+  .tree .file   { color: #e2e8f0; }
+  .tree .comment{ color: #475569; }
+  .tree .indent1 { padding-left: 20px; }
+  .tree .indent2 { padding-left: 40px; }
+  .tree .indent3 { padding-left: 60px; }
+
+  /* ── Step list ── */
+  .steps { counter-reset: step; }
+  .step { display: flex; gap: 14px; margin-bottom: 16px; }
+  .step-num {
+    width: 28px; height: 28px; flex-shrink: 0;
+    background: var(--accent); color: white; border-radius: 50%;
+    font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  }
+  .step-body { flex: 1; padding-top: 3px; }
+  .step-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .step-desc  { font-size: 13px; color: var(--text2); }
+
+  /* ── Pill grid ── */
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+  .pill { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid; }
+  .pill-blue   { background: var(--accent-bg); color: var(--accent); border-color: var(--accent-border); }
+  .pill-green  { background: var(--green-bg);  color: var(--green);  border-color: var(--green-border); }
+  .pill-amber  { background: var(--amber-bg);  color: var(--amber);  border-color: var(--amber-border); }
+
+  /* ── Toggle accordion ── */
+  .accordion { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+  .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; cursor: pointer; background: var(--surface); font-size: 14px; font-weight: 600; user-select: none; transition: background .15s; }
+  .acc-header:hover { background: var(--surface2); }
+  .acc-icon { font-size: 18px; color: var(--text3); transition: transform .2s; }
+  .acc-icon.open { transform: rotate(180deg); }
+  .acc-body { padding: 0 18px; max-height: 0; overflow: hidden; transition: max-height .3s ease, padding .3s ease; }
+  .acc-body.open { max-height: 1200px; padding: 14px 18px; border-top: 1px solid var(--border); }
+
+  /* ── Quiz ── */
+  .quiz-opt { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; margin-bottom: 8px; font-size: 14px; transition: all .15s; }
+  .quiz-opt:hover { border-color: var(--accent); background: var(--accent-bg); }
+  .quiz-opt.correct { border-color: var(--green); background: var(--green-bg); color: var(--green); font-weight: 600; }
+  .quiz-opt.wrong   { border-color: var(--red);   background: var(--red-bg);   color: var(--red);   }
+  .quiz-msg { font-size: 13px; margin-top: 8px; padding: 8px 12px; border-radius: 6px; }
+  .quiz-msg.ok  { background: var(--green-bg); color: #065f46; }
+  .quiz-msg.err { background: var(--red-bg);   color: #991b1b; }
+
+  /* ── Hero ── */
+  .hero { background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%); color: white; padding: 40px 48px; margin-bottom: 0; }
+  .hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+  .hero p  { font-size: 16px; opacity: .8; max-width: 520px; line-height: 1.6; }
+  .hero-pills { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .hero-pill { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 600; }
+
+  /* ── Progress bar (TOC) ── */
+  .progress-bar { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--accent); transform-origin: left; z-index: 999; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { padding: 24px 20px; }
+    .hero { padding: 28px 20px; }
+    .hero h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress" class="progress-bar" style="transform: scaleX(0)"></div>
+
+<div class="hero">
+  <h1>Backend Development</h1>
+  <p>Complete notes from scratch — server setup, database connection, MVC structure, authentication, and CRUD operations with real code examples.</p>
+  <div class="hero-pills">
+    <span class="hero-pill">Node.js</span>
+    <span class="hero-pill">Express.js</span>
+    <span class="hero-pill">MongoDB</span>
+    <span class="hero-pill">MVC Pattern</span>
+    <span class="hero-pill">JWT Auth</span>
+    <span class="hero-pill">REST APIs</span>
+  </div>
+</div>
+
+<div class="layout">
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <h1>Backend Notes</h1>
+    <p>Click any topic to jump</p>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Foundations</div>
+    <a class="nav-item active" onclick="scrollTo('server')">01 — Server Setup</a>
+    <a class="nav-item" onclick="scrollTo('middleware')">02 — Middleware</a>
+    <a class="nav-item" onclick="scrollTo('database')">03 — Database</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">MVC Structure</div>
+    <a class="nav-item" onclick="scrollTo('mvc')">04 — MVC Pattern</a>
+    <a class="nav-item" onclick="scrollTo('models')">05 — Models & Schema</a>
+    <a class="nav-item" onclick="scrollTo('routes')">06 — Routes</a>
+    <a class="nav-item" onclick="scrollTo('controllers')">07 — Controllers</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">CRUD & Auth</div>
+    <a class="nav-item" onclick="scrollTo('crud')">08 — CRUD Operations</a>
+    <a class="nav-item" onclick="scrollTo('dynamic')">09 — Dynamic Routes</a>
+    <a class="nav-item" onclick="scrollTo('auth')">10 — Authentication</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Practice</div>
+    <a class="nav-item" onclick="scrollTo('quiz')">Quick Quiz</a>
+  </div>
+</nav>
+
+<!-- ── Main content ── -->
+<main class="main">
+
+<!-- ════════════════ 01 SERVER ════════════════ -->
+<section class="section" id="server">
+  <span class="section-badge badge-blue">01 — Foundations</span>
+  <h2 class="section-title">Server Setup</h2>
+  <p class="section-desc">Express.js se server banana — app.js vs server.js ka role, aur response bhejne ka tarika.</p>
+
+  <div class="card">
+    <div class="card-title">🏗️ app.js vs server.js — dono ka kaam alag hai</div>
+    <div class="card-body">
+      <p>Yeh ek important separation hai jo beginners miss karte hain:</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+      <div style="background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:8px;padding:14px;">
+        <div style="font-weight:700;font-size:13px;color:var(--accent);margin-bottom:6px;">📄 app.js</div>
+        <div style="font-size:13px;color:#1e40af;">Express app <strong>create</strong> hota hai yahan. Middleware aur routes define hote hain. Export hota hai server.js ke liye.</div>
+      </div>
+      <div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:8px;padding:14px;">
+        <div style="font-weight:700;font-size:13px;color:var(--green);margin-bottom:6px;">🚀 server.js</div>
+        <div style="font-size:13px;color:#065f46;">Sirf server <strong>start</strong> karta hai. DB connect karta hai. Port pe listen karta hai.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">server.js</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// server.js — sirf server start karta hai</span>
+<span class="kw">const</span> app = <span class="fn">require</span>(<span class="str">'./src/app'</span>);
+<span class="kw">const</span> connectDB = <span class="fn">require</span>(<span class="str">'./src/db/db'</span>);
+<span class="fn">require</span>(<span class="str">'dotenv'</span>).<span class="fn">config</span>();
+
+<span class="kw">const</span> PORT = process.env.PORT || <span class="num">5000</span>;
+
+<span class="fn">connectDB</span>();               <span class="cm">// Step 1: database connect karo</span>
+app.<span class="fn">listen</span>(PORT, () => {
+  console.<span class="fn">log</span>(<span class="str">`Server running on port <span class="num">${PORT}</span>`</span>);
+});</code></pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">src/app.js</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// app.js — Express app create hota hai yahan</span>
+<span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> app = <span class="fn">express</span>();
+
+app.<span class="fn">use</span>(express.<span class="fn">json</span>());        <span class="cm">// middleware</span>
+app.<span class="fn">use</span>(<span class="str">'/api/users'</span>, userRoutes);   <span class="cm">// routes register</span>
+
+<span class="kw">module</span>.exports = app;          <span class="cm">// export kar do server.js ke liye</span></code></pre>
+  </div>
+
+  <div class="callout callout-blue">
+    <strong>Response kaise bhejte hain?</strong><br>
+    Frontend ko data dena ho to <code>res.json()</code> use karo — yeh JSON format mein data bhejta hai. Sirf text dena ho to <code>res.send()</code>.
+  </div>
+</section>
+
+<!-- ════════════════ 02 MIDDLEWARE ════════════════ -->
+<section class="section" id="middleware">
+  <span class="section-badge badge-amber">02 — Middleware</span>
+  <h2 class="section-title">Middleware kya hota hai?</h2>
+  <p class="section-desc">Request aur response ke beech mein jo code chalta hai — woh middleware hai. Express ke built-in middlewares sabse zyada use hote hain.</p>
+
+  <div class="flow" style="margin:20px 0;">
+    <div class="flow-box gray">Frontend Request</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">express.json()</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box amber">cookie-parser</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box purple">cors()</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box green">Route Handler</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box gray">Response</div>
+  </div>
+
+  <table class="compare">
+    <thead><tr><th>Middleware</th><th>Kya karta hai</th><th>Use case</th></tr></thead>
+    <tbody>
+      <tr><td><span class="mono-pill">express.json()</span></td><td>Frontend se aane wala JSON body data read kar sakta hai</td><td>POST/PUT requests mein body data lena</td></tr>
+      <tr><td><span class="mono-pill">cookie-parser</span></td><td>Request ke cookies parse karta hai</td><td>JWT token cookie mein store karna</td></tr>
+      <tr><td><span class="mono-pill">cors()</span></td><td>Cross-origin requests allow karta hai</td><td>React frontend alag port pe ho to</td></tr>
+      <tr><td><span class="mono-pill">custom middleware</span></td><td>Apni logic likhte hain (auth check, logging)</td><td>Protected routes ke liye</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-amber">
+    <strong>Important!</strong> Agar <code>express.json()</code> na lagao to <code>req.body</code> undefined aata hai — frontend se aaya data nahi milta.
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Middleware example</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// Custom middleware — har request ke pehle chalta hai</span>
+<span class="kw">const</span> <span class="fn">logger</span> = (req, res, next) => {
+  console.<span class="fn">log</span>(<span class="str">`${req.method} ${req.url}`</span>);
+  <span class="fn">next</span>();  <span class="cm">// next() zaroor call karo warna request ruk jaati hai</span>
+};
+
+app.<span class="fn">use</span>(logger);  <span class="cm">// har route se pehle chalega</span></code></pre>
+  </div>
+</section>
+
+<!-- ════════════════ 03 DATABASE ════════════════ -->
+<section class="section" id="database">
+  <span class="section-badge badge-green">03 — Database</span>
+  <h2 class="section-title">MongoDB Atlas Connection</h2>
+  <p class="section-desc">MongoDB Atlas pe cluster banao, phir apni app ko connect karo. Local address ki jagah zeros use karte hain.</p>
+
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">MongoDB Atlas pe cluster banao</div><div class="step-desc">mongodb.com/atlas pe jao, free cluster create karo. Apna region choose karo.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">IP Address whitelist karo — 0.0.0.0/0</div><div class="step-desc">Local machine ka IP likhne ki bajay <strong>0.0.0.0/0</strong> likhte hain — iska matlab "koi bhi IP se connect ho sakta hai". WiFi change hone pe bhi connection nahi tootega.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Connection string .env mein save karo</div><div class="step-desc">Username, password aur database name replace karo apni connection string mein.</div></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">db.js mein connection logic likho</div><div class="step-desc">Alag db.js file banao, wahan connection karo, export karo, server.js mein import karo.</div></div></div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">src/db/db.js</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">const</span> mongoose = <span class="fn">require</span>(<span class="str">'mongoose'</span>);
+
+<span class="kw">const</span> <span class="fn">connectDB</span> = <span class="kw">async</span> () => {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> conn = <span class="kw">await</span> mongoose.<span class="fn">connect</span>(process.env.<span class="prop">MONGO_URI</span>);
+    console.<span class="fn">log</span>(<span class="str">`✅ MongoDB Connected: ${conn.connection.host}`</span>);
+  } <span class="kw">catch</span> (error) {
+    console.<span class="fn">error</span>(<span class="str">`❌ Error: ${error.message}`</span>);
+    process.<span class="fn">exit</span>(<span class="num">1</span>);  <span class="cm">// DB fail ho to server band karo</span>
+  }
+};
+
+<span class="kw">module</span>.exports = connectDB;</code></pre>
+  </div>
+
+  <div class="callout callout-green">
+    <strong>Folder structure tip:</strong> <code>src/db/db.js</code> — <code>src</code> ke andar <code>db</code> folder banao, usme <code>db.js</code> file. Yeh clean separation hai.
+  </div>
+</section>
+
+<!-- ════════════════ 04 MVC ════════════════ -->
+<section class="section" id="mvc">
+  <span class="section-badge badge-purple">04 — Architecture</span>
+  <h2 class="section-title">MVC Pattern</h2>
+  <p class="section-desc">Model-View-Controller — code ko organize karne ka sabse popular tarika. Har cheez apni jagah.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:20px 0;">
+    <div class="card" style="border-top:3px solid var(--accent);">
+      <div class="card-title" style="color:var(--accent);">M — Model</div>
+      <div class="card-body">Data kaisa dikhta hai yeh define karta hai. MongoDB schema yahan hota hai.<br><br><strong>Folder:</strong> <code>src/models/</code></div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--purple);">
+      <div class="card-title" style="color:var(--purple);">V — View</div>
+      <div class="card-body">Backend mein View = JSON response. Hamara React frontend yeh kaam karta hai.<br><br><strong>Return:</strong> <code>res.json()</code></div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--green);">
+      <div class="card-title" style="color:var(--green);">C — Controller</div>
+      <div class="card-body">Business logic yahan hoti hai — data laana, save karna, delete karna.<br><br><strong>Folder:</strong> <code>src/controllers/</code></div>
+    </div>
+  </div>
+
+  <div class="tree">
+    <div><span class="folder">src/</span></div>
+    <div class="indent1"><span class="folder">models/</span>     <span class="comment">← schemas (M)</span></div>
+    <div class="indent2"><span class="file">User.model.js</span></div>
+    <div class="indent2"><span class="file">Post.model.js</span></div>
+    <div class="indent1"><span class="folder">controllers/</span>  <span class="comment">← logic (C)</span></div>
+    <div class="indent2"><span class="file">auth.controller.js</span></div>
+    <div class="indent2"><span class="file">post.controller.js</span></div>
+    <div class="indent1"><span class="folder">routes/</span>       <span class="comment">← URL paths</span></div>
+    <div class="indent2"><span class="file">auth.routes.js</span></div>
+    <div class="indent1"><span class="folder">middleware/</span>   <span class="comment">← auth check etc.</span></div>
+    <div class="indent2"><span class="file">auth.middleware.js</span></div>
+    <div class="indent1"><span class="folder">db/</span></div>
+    <div class="indent2"><span class="file">db.js</span>          <span class="comment">← DB connection</span></div>
+    <div class="indent1"><span class="file">app.js</span>          <span class="comment">← express setup</span></div>
+    <div><span class="file">server.js</span>           <span class="comment">← entry point</span></div>
+  </div>
+</section>
+
+<!-- ════════════════ 05 MODELS ════════════════ -->
+<section class="section" id="models">
+  <span class="section-badge badge-blue">05 — Models</span>
+  <h2 class="section-title">Models & Schema</h2>
+  <p class="section-desc">Database mein data store karne se pehle bataana padta hai ke data kaisa dikhega — yeh kaam schema karta hai.</p>
+
+  <div class="accordion">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span>Schema kya hota hai?</span>
+      <span class="acc-icon">▼</span>
+    </div>
+    <div class="acc-body">
+      <p style="font-size:14px;color:var(--text2);margin-bottom:10px;">Schema ek blueprint hai — jaise koi form hai jis mein kya fields honge, kya required hai, kya type hoga. Mongoose mein hum yeh define karte hain.</p>
+      <div class="pills">
+        <span class="pill pill-blue">String</span>
+        <span class="pill pill-blue">Number</span>
+        <span class="pill pill-blue">Boolean</span>
+        <span class="pill pill-blue">Date</span>
+        <span class="pill pill-blue">ObjectId (reference)</span>
+        <span class="pill pill-amber">required: true</span>
+        <span class="pill pill-amber">unique: true</span>
+        <span class="pill pill-green">default: value</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">src/models/User.model.js</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">const</span> mongoose = <span class="fn">require</span>(<span class="str">'mongoose'</span>);
+
+<span class="kw">const</span> userSchema = <span class="kw">new</span> mongoose.<span class="fn">Schema</span>({
+  name: {
+    type: String,
+    required: [<span class="kw">true</span>, <span class="str">'Name is required'</span>],
+  },
+  email: {
+    type: String,
+    required: <span class="kw">true</span>,
+    <span class="prop">unique</span>: <span class="kw">true</span>,     <span class="cm">// sirf unique email se register ho sakta hai</span>
+    lowercase: <span class="kw">true</span>,
+  },
+  role: {
+    type: String,
+    <span class="prop">enum</span>: [<span class="str">'patient'</span>, <span class="str">'doctor'</span>],  <span class="cm">// sirf yeh 2 values allowed</span>
+    default: <span class="str">'patient'</span>,
+  },
+}, { timestamps: <span class="kw">true</span> });  <span class="cm">// createdAt, updatedAt auto add</span>
+
+<span class="kw">module</span>.exports = mongoose.<span class="fn">model</span>(<span class="str">'User'</span>, userSchema);</code></pre>
+  </div>
+
+  <div class="callout callout-blue">
+    <strong>unique: true ka matlab?</strong> Agar koi already us email se register hai, to naya registration reject ho jaega. MongoDB level pe enforcement hoti hai.
+  </div>
+</section>
+
+<!-- ════════════════ 06 ROUTES ════════════════ -->
+<section class="section" id="routes">
+  <span class="section-badge badge-amber">06 — Routes</span>
+  <h2 class="section-title">Routes</h2>
+  <p class="section-desc">Routes sirf URL endpoints define karte hain — logic nahi. Logic controller mein hoti hai.</p>
+
+  <div class="card">
+    <div class="card-title">Routes ka rule — sirf route banao, logic mat likho</div>
+    <div class="card-body">
+      <p>Routes file mein sirf yeh hona chahiye: HTTP method + URL path + controller function. Kuch nahi.</p>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">src/routes/user.routes.js</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> router  = express.<span class="fn">Router</span>();
+<span class="kw">const</span> { register, login, getUser } = <span class="fn">require</span>(<span class="str">'../controllers/auth.controller'</span>);
+<span class="kw">const</span> { protect } = <span class="fn">require</span>(<span class="str">'../middleware/auth.middleware'</span>);
+
+<span class="cm">// Public routes — koi bhi access kar sakta</span>
+router.<span class="fn">post</span>(<span class="str">'/register'</span>, register);
+router.<span class="fn">post</span>(<span class="str">'/login'</span>,    login);
+
+<span class="cm">// Protected route — sirf logged-in user</span>
+router.<span class="fn">get</span>(<span class="str">'/:id'</span>, protect, getUser);  <span class="cm">// :id — dynamic parameter</span>
+
+<span class="kw">module</span>.exports = router;</code></pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">app.js — routes register karo</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">const</span> userRoutes = <span class="fn">require</span>(<span class="str">'./routes/user.routes'</span>);
+
+<span class="cm">// App.js mein saray routes define karo — server ko pata chalay</span>
+app.<span class="fn">use</span>(<span class="str">'/api/users'</span>, userRoutes);</code></pre>
+  </div>
+
+  <table class="compare">
+    <thead><tr><th>HTTP Method</th><th>Use kab karte hain</th><th>Example URL</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill pill-green" style="font-size:11px;">GET</span></td><td>Data fetch karna (read)</td><td>/api/users</td></tr>
+      <tr><td><span class="pill pill-blue" style="font-size:11px;">POST</span></td><td>Naya data create karna</td><td>/api/users/register</td></tr>
+      <tr><td><span class="pill pill-amber" style="font-size:11px;">PUT/PATCH</span></td><td>Existing data update karna</td><td>/api/users/:id</td></tr>
+      <tr><td style="color:var(--red);font-weight:600;">DELETE</td><td>Data delete karna</td><td>/api/users/:id</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ════════════════ 07 CONTROLLERS ════════════════ -->
+<section class="section" id="controllers">
+  <span class="section-badge badge-green">07 — Controllers</span>
+  <h2 class="section-title">Controllers</h2>
+  <p class="section-desc">Saari business logic yahan hoti hai — database se data lana, process karna, response dena.</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">src/controllers/auth.controller.js</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">const</span> User = <span class="fn">require</span>(<span class="str">'../models/User.model'</span>);
+
+<span class="cm">// Register controller</span>
+<span class="kw">const</span> <span class="fn">register</span> = <span class="kw">async</span> (req, res) => {
+  <span class="kw">try</span> {
+    <span class="cm">// body mein data aaya frontend se — express.json() ne parse kiya</span>
+    <span class="kw">const</span> { name, email, password } = req.body;
+
+    <span class="cm">// Check: email already exist karta hai?</span>
+    <span class="kw">const</span> existing = <span class="kw">await</span> User.<span class="fn">findOne</span>({ email });
+    <span class="kw">if</span> (existing) {
+      <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">400</span>).<span class="fn">json</span>({ message: <span class="str">'Email already used'</span> });
+    }
+
+    <span class="kw">const</span> user = <span class="kw">await</span> User.<span class="fn">create</span>({ name, email, password });
+
+    <span class="cm">// res.json — frontend ko JSON format mein response bhejte hain</span>
+    res.<span class="fn">status</span>(<span class="num">201</span>).<span class="fn">json</span>({ message: <span class="str">'Registered!'</span>, user });
+  } <span class="kw">catch</span> (error) {
+    res.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({ message: error.message });
+  }
+};
+
+<span class="kw">module</span>.exports = { register };</code></pre>
+  </div>
+</section>
+
+<!-- ════════════════ 08 CRUD ════════════════ -->
+<section class="section" id="crud">
+  <span class="section-badge badge-purple">08 — CRUD</span>
+  <h2 class="section-title">CRUD Operations</h2>
+  <p class="section-desc">Mongoose ke 4 main methods — har ek ka alag use case hai.</p>
+
+  <div class="accordion">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span>📋 find() — saray documents laao (array return)</span>
+      <span class="acc-icon">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="callout callout-blue" style="margin:0 0 10px;"><strong>Returns:</strong> Array of objects — saray match karne wale documents.</div>
+      <div class="code-wrap" style="margin:0;">
+        <div class="code-header"><span class="code-lang">Example</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="cm">// Saray users laao</span>
+<span class="kw">const</span> users = <span class="kw">await</span> User.<span class="fn">find</span>();
+
+<span class="cm">// Condition ke saath — sirf doctors</span>
+<span class="kw">const</span> doctors = <span class="kw">await</span> User.<span class="fn">find</span>({ role: <span class="str">'doctor'</span> });
+
+<span class="cm">// Sirf kuch fields laao (.select)</span>
+<span class="kw">const</span> names = <span class="kw">await</span> User.<span class="fn">find</span>().<span class="fn">select</span>(<span class="str">'name email -password'</span>);</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span>🔍 findOne() — sirf ek document laao</span>
+      <span class="acc-icon">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="callout callout-green" style="margin:0 0 10px;"><strong>Returns:</strong> Single object ya null. Login ke liye email dhundna yahan hota hai.</div>
+      <div class="code-wrap" style="margin:0;">
+        <div class="code-header"><span class="code-lang">Example</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="cm">// Email se ek user dhundo</span>
+<span class="kw">const</span> user = <span class="kw">await</span> User.<span class="fn">findOne</span>({ email: <span class="str">'ali@example.com'</span> });
+
+<span class="kw">if</span> (!user) {
+  <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">json</span>({ message: <span class="str">'User not found'</span> });
+}</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span>✏️ findOneAndUpdate() — dhundo aur update karo</span>
+      <span class="acc-icon">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="callout callout-amber" style="margin:0 0 10px;"><strong>2 params:</strong> (1) kaunsi ID update karni, (2) kya update karna. ID <code>req.params</code> se, body <code>req.body</code> se.</div>
+      <div class="code-wrap" style="margin:0;">
+        <div class="code-header"><span class="code-lang">Example</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="cm">// :id params se aata hai (URL: /api/users/abc123)</span>
+<span class="cm">// description body se aata hai (req.body)</span>
+<span class="kw">const</span> updated = <span class="kw">await</span> User.<span class="fn">findOneAndUpdate</span>(
+  { _id: req.params.id },       <span class="cm">// KAUNSA update karna — ID</span>
+  { description: req.body.description },  <span class="cm">// KYA update karna</span>
+  { <span class="prop">new</span>: <span class="kw">true</span> }               <span class="cm">// updated doc return karo</span>
+);</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span>🗑️ findOneAndDelete() — dhundo aur delete karo</span>
+      <span class="acc-icon">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="code-wrap" style="margin:0;">
+        <div class="code-header"><span class="code-lang">Example</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="cm">// Specific ID wala document delete karo</span>
+<span class="kw">const</span> deleted = <span class="kw">await</span> User.<span class="fn">findOneAndDelete</span>({ _id: req.params.id });
+
+<span class="kw">if</span> (!deleted) {
+  <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">json</span>({ message: <span class="str">'Not found'</span> });
+}
+res.<span class="fn">json</span>({ message: <span class="str">'Deleted!'</span> });</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ 09 DYNAMIC ROUTES ════════════════ -->
+<section class="section" id="dynamic">
+  <span class="section-badge badge-amber">09 — Dynamic Routes</span>
+  <h2 class="section-title">:colon wala dynamic route</h2>
+  <p class="section-desc">Route mein colon lagao to woh variable ban jaata hai — har request mein alag value ho sakti hai.</p>
+
+  <div class="card">
+    <div class="card-title">:id ka concept</div>
+    <div class="card-body">
+      <p>Jis variable ko dynamic banana ho, us ke saath <strong>colon</strong> lagao: <code>/:id</code></p>
+      <p style="margin-top:8px;">Ek route likho, hazaron alag IDs ke liye kaam kare. <code>req.params.id</code> se actual value milti hai.</p>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Dynamic route example</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// Route define karo</span>
+router.<span class="fn">get</span>(<span class="str">'/:id'</span>, getUser);
+router.<span class="fn">delete</span>(<span class="str">'/:id'</span>, deleteUser);
+router.<span class="fn">patch</span>(<span class="str">'/:id/status'</span>, updateStatus);
+
+<span class="cm">// Controller mein value milti hai</span>
+<span class="kw">const</span> <span class="fn">getUser</span> = <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> id = req.params.id;   <span class="cm">// URL: /api/users/abc123  → id = "abc123"</span>
+  <span class="kw">const</span> user = <span class="kw">await</span> User.<span class="fn">findById</span>(id);
+  res.<span class="fn">json</span>(user);
+};</code></pre>
+  </div>
+
+  <div style="background:var(--surface2);border-radius:8px;padding:16px;margin:12px 0;font-size:14px;">
+    <div style="font-weight:700;margin-bottom:8px;color:var(--text);">Real example:</div>
+    <div style="font-family:var(--mono);font-size:13px;">
+      <span style="color:var(--text3);">Request:</span> <span style="color:var(--green);">GET /api/appointments/<strong style="color:var(--accent);">64a1b2c3d4e5f6</strong></span><br>
+      <span style="color:var(--text3);">Controller:</span> <span style="color:var(--text);">req.params.id = <strong style="color:var(--accent);">"64a1b2c3d4e5f6"</strong></span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ 10 AUTH ════════════════ -->
+<section class="section" id="auth">
+  <span class="section-badge badge-red">10 — Authentication</span>
+  <h2 class="section-title">JWT Authentication</h2>
+  <p class="section-desc">User login kare to ek token milta hai — har protected request mein woh token bhejta hai proof ke taur pe.</p>
+
+  <div class="flow" style="flex-wrap:wrap;gap:4px;margin:20px 0;">
+    <div class="flow-box gray" style="font-size:12px;">User Login</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box" style="font-size:12px;">Password verify</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box amber" style="font-size:12px;">JWT token generate</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box green" style="font-size:12px;">Cookie mein save</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box purple" style="font-size:12px;">Protected route access</div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JWT token generate karna</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">const</span> jwt = <span class="fn">require</span>(<span class="str">'jsonwebtoken'</span>);
+
+<span class="cm">// Token banao — user ID andar pack karo</span>
+<span class="kw">const</span> token = jwt.<span class="fn">sign</span>(
+  { id: user._id },          <span class="cm">// payload — kya store karna</span>
+  process.env.<span class="prop">JWT_SECRET</span>,     <span class="cm">// secret key — .env mein rakho</span>
+  { expiresIn: <span class="str">'7d'</span> }        <span class="cm">// 7 din baad expire</span>
+);
+
+<span class="cm">// Cookie mein bhejo — safe rehta hai</span>
+res.<span class="fn">cookie</span>(<span class="str">'token'</span>, token, {
+  httpOnly: <span class="kw">true</span>,  <span class="cm">// JS se access nahi ho sakta (XSS se safe)</span>
+  maxAge: <span class="num">7</span> * <span class="num">24</span> * <span class="num">60</span> * <span class="num">60</span> * <span class="num">1000</span>,
+});</code></pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Middleware — token verify karo</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">const</span> <span class="fn">protect</span> = <span class="kw">async</span> (req, res, next) => {
+  <span class="kw">const</span> token = req.cookies.token;
+  
+  <span class="kw">if</span> (!token) {
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({ message: <span class="str">'Not authorized'</span> });
+  }
+
+  <span class="kw">const</span> decoded = jwt.<span class="fn">verify</span>(token, process.env.<span class="prop">JWT_SECRET</span>);
+  req.user = <span class="kw">await</span> User.<span class="fn">findById</span>(decoded.id).<span class="fn">select</span>(<span class="str">'-password'</span>);
+  
+  <span class="fn">next</span>();  <span class="cm">// sab theek — aage jaao</span>
+};</code></pre>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🛡️ Role-based Authorization</div>
+    <div class="card-body">
+      <p>Authentication = "tum kaun ho?" | Authorization = "tum kya kar sakte ho?"</p>
+    </div>
+    <div class="code-wrap" style="margin-top:12px;">
+      <div class="code-header"><span class="code-lang">Role check middleware</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">const</span> <span class="fn">authorizeRole</span> = (...roles) => {
+  <span class="kw">return</span> (req, res, next) => {
+    <span class="kw">if</span> (!roles.<span class="fn">includes</span>(req.user.role)) {
+      <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">403</span>).<span class="fn">json</span>({ message: <span class="str">'Access denied!'</span> });
+    }
+    <span class="fn">next</span>();
+  };
+};
+
+<span class="cm">// Route pe use karo</span>
+router.<span class="fn">post</span>(<span class="str">'/'</span>, protect, <span class="fn">authorizeRole</span>(<span class="str">'patient'</span>), bookAppointment);</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ QUIZ ════════════════ -->
+<section class="section" id="quiz">
+  <span class="section-badge badge-purple">Practice</span>
+  <h2 class="section-title">Quick Quiz — Test Yourself</h2>
+  <p class="section-desc">Concepts ko check karo. Options pe click karo.</p>
+
+  <div id="q1" class="card">
+    <div class="card-title" style="margin-bottom:14px;">Q1. Frontend se aaya data backend mein kaise read hota hai?</div>
+    <div class="quiz-opt" onclick="check(this,'q1',false)"><span>A</span> res.json() middleware lagao</div>
+    <div class="quiz-opt" onclick="check(this,'q1',true)"><span>B</span> express.json() middleware lagao — tab req.body se milta hai</div>
+    <div class="quiz-opt" onclick="check(this,'q1',false)"><span>C</span> req.params mein aata hai</div>
+    <div id="q1-msg"></div>
+  </div>
+
+  <div id="q2" class="card">
+    <div class="card-title" style="margin-bottom:14px;">Q2. findOne() aur find() mein kya fark hai?</div>
+    <div class="quiz-opt" onclick="check(this,'q2',false)"><span>A</span> Koi fark nahi — dono same kaam karte hain</div>
+    <div class="quiz-opt" onclick="check(this,'q2',false)"><span>B</span> find() sirf ek document deta hai, findOne() array</div>
+    <div class="quiz-opt" onclick="check(this,'q2',true)"><span>C</span> find() array return karta hai, findOne() sirf ek object</div>
+    <div id="q2-msg"></div>
+  </div>
+
+  <div id="q3" class="card">
+    <div class="card-title" style="margin-bottom:14px;">Q3. /api/users/:id mein :id kahan se milta hai controller ko?</div>
+    <div class="quiz-opt" onclick="check(this,'q3',false)"><span>A</span> req.body.id se</div>
+    <div class="quiz-opt" onclick="check(this,'q3',true)"><span>B</span> req.params.id se</div>
+    <div class="quiz-opt" onclick="check(this,'q3',false)"><span>C</span> req.query.id se</div>
+    <div id="q3-msg"></div>
+  </div>
+
+  <div id="q4" class="card">
+    <div class="card-title" style="margin-bottom:14px;">Q4. MongoDB Atlas mein IP address "0.0.0.0/0" kyun likhte hain?</div>
+    <div class="quiz-opt" onclick="check(this,'q4',false)"><span>A</span> Zyada secure hota hai</div>
+    <div class="quiz-opt" onclick="check(this,'q4',true)"><span>B</span> WiFi change hone par bhi connection kaam kare — apni machine ka IP badal sakta hai</div>
+    <div class="quiz-opt" onclick="check(this,'q4',false)"><span>C</span> Yeh MongoDB ki default setting hai</div>
+    <div id="q4-msg"></div>
+  </div>
+
+  <div id="q5" class="card">
+    <div class="card-title" style="margin-bottom:14px;">Q5. MVC mein business logic kahan likhte hain?</div>
+    <div class="quiz-opt" onclick="check(this,'q5',false)"><span>A</span> Routes file mein</div>
+    <div class="quiz-opt" onclick="check(this,'q5',false)"><span>B</span> Model file mein</div>
+    <div class="quiz-opt" onclick="check(this,'q5',true)"><span>C</span> Controller file mein</div>
+    <div id="q5-msg"></div>
+  </div>
+
+  <div id="quiz-result" style="display:none;" class="card" style="border-top:3px solid var(--green);">
+    <div class="card-title">Quiz complete! 🎉</div>
+    <div id="quiz-score" class="card-body"></div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+function scrollTo(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function toggleAcc(header) {
+  const body = header.nextElementSibling;
+  const icon = header.querySelector('.acc-icon');
+  body.classList.toggle('open');
+  icon.classList.toggle('open');
+}
+
+function copyCode(btn) {
+  const code = btn.closest('.code-wrap').querySelector('code').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+const answers = {};
+function check(el, qid, correct) {
+  if (answers[qid] !== undefined) return;
+  answers[qid] = correct;
+  const opts = el.parentElement.querySelectorAll('.quiz-opt');
+  opts.forEach(o => o.style.pointerEvents = 'none');
+  el.classList.add(correct ? 'correct' : 'wrong');
+  const msg = document.getElementById(qid + '-msg');
+  msg.className = 'quiz-msg ' + (correct ? 'ok' : 'err');
+  msg.textContent = correct
+    ? '✅ Bilkul sahi!'
+    : '❌ Galat — sahi answer green mein dekho.';
+  if (!correct) {
+    opts.forEach(o => {
+      if (o.getAttribute('onclick').includes('true')) o.classList.add('correct');
+    });
+  }
+  if (Object.keys(answers).length === 5) {
+    const score = Object.values(answers).filter(Boolean).length;
+    const result = document.getElementById('quiz-result');
+    result.style.display = 'block';
+    document.getElementById('quiz-score').textContent =
+      `${score}/5 correct — ${score === 5 ? 'Perfect! Sab concepts clear hain 🚀' : score >= 3 ? 'Acha hua! Thoda revision karo.' : 'Wapas notes parho aur dobara try karo.'}`;
+    result.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = h.scrollTop / (h.scrollHeight - h.clientHeight);
+  document.getElementById('progress').style.transform = `scaleX(${pct})`;
+});
+</script>
+</body>
+</html>
